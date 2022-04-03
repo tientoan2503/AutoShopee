@@ -85,7 +85,7 @@ class AutoService : AccessibilityService(), View.OnClickListener {
                             while (true) {
                                 if (!isStop) {
                                     mBtnPauseOrStart.setImageResource(R.drawable.pause)
-                                    delay(300)
+                                    delay(500)
                                     clickBuy()
                                 } else {
                                     mBtnPauseOrStart.setImageResource(R.drawable.play)
@@ -110,46 +110,48 @@ class AutoService : AccessibilityService(), View.OnClickListener {
     }
 
     private suspend fun clickBuy() {
-        val buyNode = rootInActiveWindow.findAccessibilityNodeInfosByText("Đặt hàng")
-        if (buyNode.isNotEmpty()) {
-            buyNode[1].parent.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-        } else {
-            try {
-                val isXacMinh =
-                    rootInActiveWindow.getChild(0).getChild(0).getChild(0).getChild(0)
-                        .getChild(0)
-                        .getChild(0).getChild(0).getChild(0).getChild(0).getChild(0).text
-                if (isXacMinh.toString() == "Xác Minh") {
-                    isStop = true
-                    mBtnPauseOrStart.setImageResource(R.drawable.play)
-                    Toast.makeText(this@AutoService, "Có capcha nè!!!", Toast.LENGTH_LONG)
-                        .show()
-                } else {
-                    throw Exception()
+        try {
+            val buyNode = rootInActiveWindow.findAccessibilityNodeInfosByText("Đặt hàng")
+            if (buyNode.isNotEmpty()) {
+                if (buyNode[1].parent != null) {
+                    val node = buyNode[1].parent
+                    node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                 }
-            } catch (e: Exception) {
+            } else {
+                try {
+                    val isXacMinh =
+                        rootInActiveWindow.getChild(0).getChild(0).getChild(0).getChild(0)
+                            .getChild(0)
+                            .getChild(0).getChild(0).getChild(0).getChild(0).getChild(0).text
+                    if (isXacMinh.toString() == "Xác Minh") {
+                        isStop = true
+                        mBtnPauseOrStart.setImageResource(R.drawable.play)
+                        Toast.makeText(this@AutoService, "Có capcha nè!!!", Toast.LENGTH_LONG)
+                            .show()
+                    } else {
+                        throw Exception()
+                    }
+                } catch (e: Exception) {
 //                    (M01): Tài khoản Shopee của bạn ghi nhận dấu hiệu bất thường. Vui lòng tham khảo và tuân thủ các Điều khoản Shopee.
 //                    (M02): Rất tiếc, ưu đãi được chọn đã hết lượt sử dụng. Vui lòng chọn ưu đãi khác nhé!
-                val m01AndM02Error =
-                    rootInActiveWindow.getChild(0).getChild(0).getChild(0).getChild(1)
-                        .getChild(0)
-                if (m01AndM02Error != null) {
-                    val dongy = rootInActiveWindow.getChild(0).getChild(0).getChild(0).getChild(3).getChild(0)
-                    delay(200)
-                    dongy.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                    try {
+                        val m01AndM02Error =
+                            rootInActiveWindow.getChild(0).getChild(0).getChild(0).getChild(1)
+                                .getChild(0)
+                        if (m01AndM02Error != null) {
+                            val dongy =
+                                rootInActiveWindow.getChild(0).getChild(0).getChild(0).getChild(3)
+                                    .getChild(0)
+                            delay(300)
+                            dongy.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                        }
+                    } catch (e: Exception) {
+
+                    }
                 }
             }
+        } catch (e: Exception) {
+
         }
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    override fun onUnbind(intent: Intent?): Boolean {
-        return super.onUnbind(intent)
-    }
-
-
-
 }

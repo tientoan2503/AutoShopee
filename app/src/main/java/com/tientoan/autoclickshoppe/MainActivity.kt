@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         private const val NAME_ACCESSIBILITY_SERVICE =
             "com.tientoan.autoclickshoppe/com.tientoan.autoclickshoppe.AutoService"
         const val SHARED_PRE = "shared_pre";
-        const val LIMIT_USE = true
+        const val LIMIT_USE = false
     }
 
     private lateinit var sharedPreferences: SharedPreferences
